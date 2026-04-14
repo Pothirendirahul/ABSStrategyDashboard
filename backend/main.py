@@ -1,3 +1,4 @@
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -5,23 +6,29 @@ from pydantic import BaseModel
 import joblib
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-challenges = pd.read_csv("../data/abs_challenges.csv")
-pitches    = pd.read_csv("../data/pitches.csv")
-players    = pd.read_csv("../data/players.csv")
+BASE_DIR = Path(__file__).resolve().parent.parent
+BACKEND_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+MODEL_PATH = BACKEND_DIR / "challenge_model.pkl"
+
+challenges = pd.read_csv(DATA_DIR / "abs_challenges.csv")
+pitches = pd.read_csv(DATA_DIR / "pitches.csv")
+players = pd.read_csv(DATA_DIR / "players.csv")
 
 df = challenges.merge(pitches, on="challenge_id", how="left")
 df = df.merge(players, left_on="challenger_player_id", right_on="player_id", how="left")
 df["is_success"] = df["challenge_result"].apply(lambda x: 1 if x == "overturned" else 0)
 
-model = joblib.load("challenge_model.pkl")
+model = joblib.load(MODEL_PATH)
 
 
 @app.get("/")

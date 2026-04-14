@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+const API_BASE =
+  process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:8000";
 import {
   BarChart,
   Bar,
@@ -266,22 +268,22 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const summaryRes = await axios.get("http://127.0.0.1:8000/summary");
+        const summaryRes = await axios.get(`${API_BASE}/summary`);
         setSummary(summaryRes.data);
       } catch (e) { console.error("Summary error:", e); }
 
       try {
-        const playerRes = await axios.get("http://127.0.0.1:8000/player-stats");
+        const playerRes = await axios.get(`${API_BASE}/player-stats`);
         setPlayerStats(playerRes.data);
       } catch (e) { console.error("Player stats error:", e); }
 
       try {
-        const trendsRes = await axios.get("http://127.0.0.1:8000/challenge-trends");
+        const trendsRes = await axios.get(`${API_BASE}/challenge-trends`);
         setChallengeTrends(trendsRes.data);
       } catch (e) { console.error("Challenge trends error:", e); }
 
       try {
-        const pitchRes = await axios.get("http://127.0.0.1:8000/pitch-map");
+        const pitchRes = await axios.get(`${API_BASE}/pitch-map`);
         setPitchMap(pitchRes.data);
       } catch (e) { console.error("Pitch map error:", e); }
     };
@@ -367,7 +369,7 @@ function App() {
     e.preventDefault();
     setPredictionLoading(true);
     try {
-      const response = await axios.post("http://127.0.0.1:8000/predict", predictionForm);
+      const response = await axios.post(`${API_BASE}/predict`, predictionForm);
       setPredictionResult(response.data);
     } catch (e) {
       console.error("Prediction error:", e);
@@ -431,7 +433,7 @@ function App() {
           </div>
         </SectionCard>
 
-        {/* Challenge Decision Assistant — unchanged */}
+       
         <SectionCard
           title="Challenge Decision Assistant"
           subtitle="Enter a pitch situation to estimate the probability that an ABS challenge will be overturned."
